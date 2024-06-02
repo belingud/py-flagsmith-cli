@@ -3,9 +3,9 @@ import os
 from enum import Enum
 from typing import Any, Dict, List
 
-from click import FileError
 import requests
 import typer
+from click import FileError
 
 from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT, FLAGSMITH_HOST
 from py_flagsmith_cli.utils import exit_error
@@ -127,8 +127,8 @@ def entry(
     identity: str = typer.Option(
         None, "--identity", "-i", help="The identity for which to fetch feature flags", metavar="<text>"
     ),
-    pretty: bool = typer.Option(
-        True, "--no-pretty", "-np", help="Prettify the output JSON", is_flag=True, metavar="<flag>"
+    no_pretty: bool = typer.Option(
+        False, "--no-pretty", "-np", help="Do not prettify the output JSON", is_flag=True, metavar="<flag>"
     ),
     entity: str = typer.Option(
         EntityEnum.flags,
@@ -143,6 +143,22 @@ def entry(
 ):
     """
     Retrieve flagsmith features from the Flagsmith API and output them to file.
+
+    \b
+    EXAMPLES
+    $ pysmith get <ENVIRONMENT_API_KEY>
+
+    $ FLAGSMITH_ENVIRONMENT=x pysmith get
+
+    $ pysmith get -e environment
+
+    $ pysmith get -o ./my-file.json
+
+    $ pysmith get -a https://flagsmith.example.com/api/v1/
+
+    $ pysmith get -i flagsmith_identity
+
+    $ pysmith get -np
     """
     if not environment:
         exit_error(
@@ -166,10 +182,10 @@ def entry(
     else:
         data = get_by_identity(api_url, environment, identity)
 
-    if pretty:
-        output_data = json.dumps(data, indent=2)
-    else:
+    if no_pretty:
         output_data = json.dumps(data)
+    else:
+        output_data = json.dumps(data, indent=2)
     if output:
         try:
             with open(output, "w") as f:

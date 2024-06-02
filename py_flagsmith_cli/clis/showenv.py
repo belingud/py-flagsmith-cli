@@ -9,9 +9,16 @@ from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT, FLAGSMITH_HOST
 def entry():
     """
     Show the current flagsmith environment setup. Including environment id and api host.
+    
+    \b
+    EXAMPLES:
+
+    $ pysmith showenv
+    Current flagsmith env setup>>>
+    flagsmith environment ID: <environment-id>
+    flagsmith host: <api-host>
     """
     smith_env: Union[str, None] = os.getenv(FLAGSMITH_ENVIRONMENT)
-    print("??????????????????", smith_env)
     if not smith_env:
         typer.echo("No environment set yet.")
         typer.echo(
@@ -24,7 +31,6 @@ in {typer.style('.env', fg=typer.colors.GREEN)} current directory."""
         )
         raise typer.Exit()
     smith_host: Union[str, None] = os.getenv(FLAGSMITH_HOST)
-    print('?????????????????', smith_host)
     typer.echo(
         f"""Current flagsmith env setup>>>
 flagsmith environment ID: {typer.style(smith_env, fg=typer.colors.GREEN)}

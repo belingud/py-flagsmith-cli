@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import typer
 from typer.testing import CliRunner
 
 from py_flagsmith_cli.cli import app
 from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT
-
 
 runner = CliRunner()
 app = app

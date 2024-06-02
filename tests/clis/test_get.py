@@ -1,18 +1,15 @@
-import pytest
 from unittest import TestCase, mock
-from unittest.mock import MagicMock, patch, Mock, mock_open
+from unittest.mock import MagicMock, Mock, mock_open, patch
+
+import pytest
 import typer
+from click.exceptions import Exit
 from typer.testing import CliRunner
 
 from py_flagsmith_cli.cli import app
-from py_flagsmith_cli.clis.get import (
-    get_by_environment,
-    get_by_identity,
-    SMITH_API_ENDPOINT,
-    NO_ENVIRONMENT_MSG,
-)
+from py_flagsmith_cli.clis.get import (NO_ENVIRONMENT_MSG, SMITH_API_ENDPOINT,
+                                       get_by_environment, get_by_identity)
 
-from click.exceptions import Exit
 from ..mockdata import mock_get_by_identity
 
 
