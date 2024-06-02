@@ -1,9 +1,8 @@
 # py-flagsmith-cli
 
-
 flagsmith-cli Python Implementation.
 
-Homepage: 
+Homepage: https://github.com/belingud/py-flagsmith-cli
 
 Refer to:
 
