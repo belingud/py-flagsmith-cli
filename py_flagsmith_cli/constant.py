@@ -1,0 +1,6 @@
+# key
+FLAGSMITH_ENVIRONMENT = 'FLAGSMITH_ENVIRONMENT'
+FLAGSMITH_HOST = 'FLAGSMITH_HOST'
+
+# context
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
