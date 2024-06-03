@@ -1,7 +1,8 @@
 # py-flagsmith-cli
 
-[![PyPI version](https://badge.fury.io/py/py-flagsmith-cli.svg)](https://pypi.org/project/py-flagsmith-cli/) [![License](https://img.shields.io/github/license/belingud/py-flagsmith-cli.svg)](https://opensource.org/licenses/MIT)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbelingud%2Fpy-flagsmith-cli.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbelingud%2Fpy-flagsmith-cli?ref=badge_shield)
+
+[![PyPI version](https://badge.fury.io/py/py-flagsmith-cli.svg)](https://pypi.org/project/py-flagsmith-cli/) [![License](https://img.shields.io/github/license/belingud/py-flagsmith-cli.svg)](https://opensource.org/licenses/MIT) ![Static Badge](https://img.shields.io/badge/language-Python-%233572A5) ![PyPI - Downloads](https://img.shields.io/pypi/dm/py-flagsmith-cli?logo=pypi&cacheSeconds=86400)
+
 
 
 flagsmith-cli Python Implementation.
@@ -114,5 +115,7 @@ Refer to:
 2. https://github.com/Flagsmith/flagsmith-cli
 
 
+
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbelingud%2Fpy-flagsmith-cli.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbelingud%2Fpy-flagsmith-cli?ref=badge_large)
+
