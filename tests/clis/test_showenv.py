@@ -20,7 +20,7 @@ def test_no_environment_set(
     mock_getenv.return_value = None
     result = runner.invoke(app, ["showenv"])
     mock_echo.assert_called_with(
-        f"""You have two ways to set the environment: 
+        f"""You have two ways to set the environment:
 1. Set the environment variable {typer.style(FLAGSMITH_ENVIRONMENT, fg=typer.colors.GREEN)} to your environment key.
     eg: `export {FLAGSMITH_ENVIRONMENT}=<your-flagsmith-environment>` in the CLI \
 or in your {typer.style('~/.bashrc', fg=typer.colors.GREEN)} or {typer.style('~/.zshrc', fg=typer.colors.GREEN)}
