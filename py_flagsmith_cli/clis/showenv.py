@@ -22,7 +22,7 @@ def entry():
     if not smith_env:
         typer.echo("No environment set yet.")
         typer.echo(
-            f"""You have two ways to set the environment: 
+            f"""You have two ways to set the environment:
 1. Set the environment variable {typer.style(FLAGSMITH_ENVIRONMENT, fg=typer.colors.GREEN)} to your environment key.
     eg: `export {FLAGSMITH_ENVIRONMENT}=<your-flagsmith-environment>` in the CLI \
 or in your {typer.style('~/.bashrc', fg=typer.colors.GREEN)} or {typer.style('~/.zshrc', fg=typer.colors.GREEN)}
