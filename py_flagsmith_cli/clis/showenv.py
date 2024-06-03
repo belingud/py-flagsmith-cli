@@ -9,7 +9,7 @@ from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT, FLAGSMITH_HOST
 def entry():
     """
     Show the current flagsmith environment setup. Including environment id and api host.
-    
+
     \b
     EXAMPLES:
 

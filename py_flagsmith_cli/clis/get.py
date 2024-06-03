@@ -117,18 +117,30 @@ def entry(
         envvar=FLAGSMITH_ENVIRONMENT,
         help="The flagsmith environment key to use, defaults to the environment variable FLAGSMITH_ENVIRONMENT",
     ),
-    output: str = typer.Option(None, "--output", "-o", help="The file path output", metavar="<text>"),
+    output: str = typer.Option(
+        None, "--output", "-o", help="The file path output", metavar="<text>"
+    ),
     api: str = typer.Option(
         SMITH_API_ENDPOINT,
         "--api",
         "-a",
-        help="The API URL to fetch the feature flags from", metavar="<text>"
+        help="The API URL to fetch the feature flags from",
+        metavar="<text>",
     ),
     identity: str = typer.Option(
-        None, "--identity", "-i", help="The identity for which to fetch feature flags", metavar="<text>"
+        None,
+        "--identity",
+        "-i",
+        help="The identity for which to fetch feature flags",
+        metavar="<text>",
     ),
     no_pretty: bool = typer.Option(
-        False, "--no-pretty", "-np", help="Do not prettify the output JSON", is_flag=True, metavar="<flag>"
+        False,
+        "--no-pretty",
+        "-np",
+        help="Do not prettify the output JSON",
+        is_flag=True,
+        metavar="<flag>",
     ),
     entity: str = typer.Option(
         EntityEnum.flags,
@@ -173,7 +185,7 @@ def entry(
         output_string += f" for identity {identity}"
     if output:
         output_string += f", outputting to {output}"
-    typer.echo(output_string + '...')
+    typer.echo(output_string + "...")
 
     api_url = api or SMITH_API_ENDPOINT
 
@@ -186,6 +198,7 @@ def entry(
         output_data = json.dumps(data)
     else:
         output_data = json.dumps(data, indent=2)
+    typer.echo(output_data)
     if output:
         try:
             with open(output, "w") as f:
@@ -194,4 +207,3 @@ def entry(
             raise FileError(output)
         typer.echo(f"Output saved to {typer.style(output, fg=typer.colors.GREEN)}")
         raise typer.Exit()
-    typer.echo(output_data)

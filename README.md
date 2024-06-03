@@ -13,6 +13,12 @@ You can install with pip:
 pip install py-flagsmith-cli
 ```
 
+Recommand use `pipx`:
+
+```shell
+pipx install py-flagsmith-cli
+```
+
 And use in cmd:
 
 ```shell
