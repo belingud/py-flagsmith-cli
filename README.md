@@ -57,7 +57,7 @@ pysmith get -h
 
  $ FLAGSMITH_ENVIRONMENT=x pysmith get
 
- $ pysmith get -e environment
+ $ pysmith get <environment>
 
  $ pysmith get -o ./my-file.json
 
