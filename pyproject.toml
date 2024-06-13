@@ -1,5 +1,5 @@
 [project]
-version = "1.0.1"
+version = "1.0.2"
 name = "py-flagsmith-cli"
 description = "flagsmith-cli Python Implementation."
 authors = [{ name = "belingud", email = "im.victor@qq.com" }]
