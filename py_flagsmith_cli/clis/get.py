@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 import requests
 import typer
 from click import FileError
+from typing_extensions import Annotated
 
 from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT, FLAGSMITH_HOST
 from py_flagsmith_cli.utils import exit_error
@@ -113,7 +114,6 @@ def get_by_environment(api: str, environment: str) -> Dict:
 
 def entry(
     environment: str = typer.Argument(
-        None,
         envvar=FLAGSMITH_ENVIRONMENT,
         help="The flagsmith environment key to use, defaults to the environment variable FLAGSMITH_ENVIRONMENT",
     ),
@@ -142,7 +142,7 @@ def entry(
         is_flag=True,
         metavar="<flag>",
     ),
-    entity: str = typer.Option(
+    entity: EntityEnum = typer.Option(
         EntityEnum.flags,
         "--entity",
         "-e",
@@ -162,7 +162,7 @@ def entry(
 
     $ FLAGSMITH_ENVIRONMENT=x pysmith get
 
-    $ pysmith get -e environment
+    $ pysmith get <environment>
 
     $ pysmith get -o ./my-file.json
 
