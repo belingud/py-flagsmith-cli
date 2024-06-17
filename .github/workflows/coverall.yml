@@ -1,0 +1,43 @@
+name: Python Package Coverage
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+jobs:
+    run-tests:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v3
+              with:
+                  python-version: ${{ matrix.python-version }}
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip pdm
+                  pdm install
+            - name: Test with pytest
+              run: |
+                  pdm run pytest --cov
+            - name: Coveralls GitHub Action
+              uses: coverallsapp/github-action@v2.3.0
+            
+            # - name: Upload coverage to Codecov
+            #   uses: codecov/codecov-action@v3
+            #   with:
+                  # The token is created by a repository owner and should be kept secret
+                  # In a CI environment, you can use the secret token "CODECOV_TOKEN"
+                  # See https://docs.codecov.io/docs/supported-languages#python
+                  # for more information
+                #   token: ${{ secrets.GITHUB_TOKEN }}

@@ -7,8 +7,12 @@ from click.exceptions import Exit
 from typer.testing import CliRunner
 
 from py_flagsmith_cli.cli import app
-from py_flagsmith_cli.clis.get import (NO_ENVIRONMENT_MSG, SMITH_API_ENDPOINT,
-                                       get_by_environment, get_by_identity)
+from py_flagsmith_cli.clis.get import (
+    NO_ENVIRONMENT_MSG,
+    SMITH_API_ENDPOINT,
+    get_by_environment,
+    get_by_identity,
+)
 
 from ..mockdata import mock_get_by_identity
 
@@ -120,7 +124,9 @@ def test_no_environment_provided(
 @patch("requests.get")
 def test_exit_if_environment_starts_with_illegal_environment(mock_get, mock_exit_error):
     mock_exit_error.side_effect = Exception(NO_ENVIRONMENT_MSG)
-    result = runner.invoke(app, ["get", "illegal_environment", "--entity", "environment"])
+    result = runner.invoke(
+        app, ["get", "illegal_environment", "--entity", "environment"]
+    )
     mock_exit_error.assert_called_with(NO_ENVIRONMENT_MSG)
 
 

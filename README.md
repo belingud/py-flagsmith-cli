@@ -4,6 +4,8 @@
 [![PyPI version](https://badge.fury.io/py/py-flagsmith-cli.svg)](https://pypi.org/project/py-flagsmith-cli/) [![License](https://img.shields.io/github/license/belingud/py-flagsmith-cli.svg)](https://opensource.org/licenses/MIT) ![Static Badge](https://img.shields.io/badge/language-Python-%233572A5) ![PyPI - Downloads](https://img.shields.io/pypi/dm/py-flagsmith-cli?logo=pypi&cacheSeconds=86400)
 
 
+[![CodeQL](https://github.com/belingud/py-flagsmith-cli/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/belingud/py-flagsmith-cli/actions/workflows/github-code-scanning/codeql)
+
 
 flagsmith-cli Python Implementation.
 
