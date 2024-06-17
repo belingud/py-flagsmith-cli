@@ -112,10 +112,8 @@ def test_no_environment_provided(
     mock_json_dumps,
 ):
     result = runner.invoke(app, ["get", "--entity", "flags"])
-    mock_echo.assert_called_with(
-        "\x1b[31m[Error]\x1b[0mA flagsmith environment was not specified, run pysmith get --help for more usage."
-    )
-    assert result.exit_code == 1
+    assert "Missing argument 'ENVIRONMENT'." in result.output
+    assert result.exit_code == 2
 
 
 @patch("py_flagsmith_cli.clis.get.exit_error")
