@@ -32,6 +32,8 @@ jobs:
                   pdm run pytest --cov
             - name: Coveralls GitHub Action
               uses: coverallsapp/github-action@v2.3.0
+              with:
+                  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
             
             # - name: Upload coverage to Codecov
             #   uses: codecov/codecov-action@v3
