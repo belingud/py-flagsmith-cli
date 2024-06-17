@@ -4,8 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/py-flagsmith-cli.svg)](https://pypi.org/project/py-flagsmith-cli/) [![License](https://img.shields.io/github/license/belingud/py-flagsmith-cli.svg)](https://opensource.org/licenses/MIT) ![Static Badge](https://img.shields.io/badge/language-Python-%233572A5) ![PyPI - Downloads](https://img.shields.io/pypi/dm/py-flagsmith-cli?logo=pypi&cacheSeconds=86400)
 
 
-[![CodeQL](https://github.com/belingud/py-flagsmith-cli/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/belingud/py-flagsmith-cli/actions/workflows/github-code-scanning/codeql)
-
+[![CodeQL](https://github.com/belingud/py-flagsmith-cli/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/belingud/py-flagsmith-cli/actions/workflows/github-code-scanning/codeql) [![Coverage Status](https://coveralls.io/repos/github/belingud/py-flagsmith-cli/badge.svg?branch=master)](https://coveralls.io/github/belingud/py-flagsmith-cli?branch=master)
 
 flagsmith-cli Python Implementation.
 
@@ -110,6 +109,11 @@ pysmith showenv -h
 │ --help  -h        Show this message and exit.                                                                │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
+
+**Note**: There is some differences with `flagsmith-cli`:
+
+1. `pysmith` will not save into json file if you don't specify `-o`
+2. `pysmith` will pretty json output as default, use `-np` to disable it. `flagsmith-cli` does the opposite
 
 Refer to:
 

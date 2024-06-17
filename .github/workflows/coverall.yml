@@ -35,14 +35,3 @@ jobs:
                   pdm run coverage lcov -o coverage/lcov.info
             - name: Coveralls GitHub Action
               uses: coverallsapp/github-action@v2.3.0
-              #with:
-                  #github-token: ${{ secrets.GITHUB_TOKEN }}
-            
-            # - name: Upload coverage to Codecov
-            #   uses: codecov/codecov-action@v3
-            #   with:
-                  # The token is created by a repository owner and should be kept secret
-                  # In a CI environment, you can use the secret token "CODECOV_TOKEN"
-                  # See https://docs.codecov.io/docs/supported-languages#python
-                  # for more information
-                #   token: ${{ secrets.GITHUB_TOKEN }}
