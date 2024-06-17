@@ -29,11 +29,14 @@ jobs:
                   pdm install
             - name: Test with pytest
               run: |
-                  pdm run pytest --cov
+                  pdm run pytest --cov=./py_flagsmith_cli
+            - name: Convert To lcov
+              run: |
+                  pdm run coverage lcov -o coverage/lcov.info
             - name: Coveralls GitHub Action
               uses: coverallsapp/github-action@v2.3.0
-              with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
+              #with:
+                  #github-token: ${{ secrets.GITHUB_TOKEN }}
             
             # - name: Upload coverage to Codecov
             #   uses: codecov/codecov-action@v3
