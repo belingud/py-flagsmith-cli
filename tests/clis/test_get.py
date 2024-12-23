@@ -42,7 +42,7 @@ class TestGetByIdentity(TestCase):
         flag = result["flags"][0]
         flag_value = flag["flag_name"]
         assert flag_value["id"] == 1
-        assert flag_value["enabled"] == True
+        assert flag_value["enabled"] is True
         assert flag_value["value"] == "https://example.com"
 
         # 断言traits
@@ -124,7 +124,7 @@ def test_no_environment_provided(
 @patch("requests.get")
 def test_exit_if_environment_starts_with_illegal_environment(mock_get, mock_exit_error):
     mock_exit_error.side_effect = Exception(NO_ENVIRONMENT_MSG)
-    result = runner.invoke(
+    runner.invoke(
         app, ["get", "illegal_environment", "--entity", "environment"]
     )
     mock_exit_error.assert_called_with(NO_ENVIRONMENT_MSG)
@@ -136,9 +136,9 @@ def test_exit_if_environment_starts_with_illegal_environment(mock_get, mock_exit
 def test_output_message_only_environment(mock_get, mock_echo, mock_get_by_environment):
     test_environment = "test-environment"
     mock_get.return_value = {}
-    result = runner.invoke(app, ["get", test_environment])
+    runner.invoke(app, ["get", test_environment])
     mock_echo.assert_called_with(
-        f"PYSmith: Retrieving flags by environment id {typer.style(test_environment, fg=typer.colors.GREEN)}..."
+        "Fetching flags and traits for identity: "
     )
 
 
@@ -151,7 +151,7 @@ def test_output_message_environment_and_identity(mock_get, mock_echo, mocked_ope
     test_identity = "identity"
     runner.invoke(app, ["get", test_environment, "--identity", test_identity])
     mock_echo.assert_called_with(
-        f"PYSmith: Retrieving flags by environment id {typer.style(test_environment, fg=typer.colors.GREEN)} for identity {test_identity}..."
+        "Fetching flags and traits for identity: identity"
     )
 
 
@@ -167,9 +167,9 @@ def test_get_by_environment(mock_get, mock_get_by_environment, mock_file_open):
 @patch("py_flagsmith_cli.clis.get.get_by_identity")
 @patch("requests.get")
 def test_get_by_identity(mock_file_open, mock_get_by_identity, mock_get):
-    result = runner.invoke(app, ["get", "env-key", "--identity", "user-123"])
+    runner.invoke(app, ["get", "env-key", "--identity", "user-123"])
     mock_get_by_identity.assert_called_once_with(
-        SMITH_API_ENDPOINT, "env-key", "user-123"
+        SMITH_API_ENDPOINT, "env-key", "user-123", []
     )
 
 
@@ -182,7 +182,7 @@ def test_output_saved_to_file(
 ):
     test_output = "output.json"
     mock_get.return_value = {"key": "value"}
-    result = runner.invoke(app, ["get", "env-key", "--output", test_output])
+    runner.invoke(app, ["get", "env-key", "--output", test_output])
     mock_file_open.assert_called_with(test_output, "w")
     mock_file_open().write.assert_called_once_with('{"key": "value"}')
 
@@ -195,7 +195,7 @@ def test_pretty_print_output(
     mock_get, mock_json_dumps, mock_file_open, mock_get_by_identity
 ):
     mock_get.return_value = {}
-    result = runner.invoke(app, ["get", "env-key"])
+    runner.invoke(app, ["get", "env-key"])
     mock_json_dumps.assert_called_once_with(mock.ANY, indent=2)
 
 
@@ -207,5 +207,101 @@ def test_non_pretty_print_output(
     mock_get, mock_json_dumps, mock_file_open, mock_get_by_identity
 ):
     mock_get.return_value = {}
-    result = runner.invoke(app, ["get", "env-key", "--no-pretty"])
+    runner.invoke(app, ["get", "env-key", "--no-pretty"])
     mock_json_dumps.assert_called_once_with(mock.ANY)
+
+
+@patch("py_flagsmith_cli.clis.get.exit_error")
+@patch("py_flagsmith_cli.clis.get.typer.echo")
+@patch("py_flagsmith_cli.clis.get.get_by_identity")
+def test_multiple_traits(mock_get_by_identity, mock_echo, mock_exit_error):
+    """Test that multiple traits are correctly processed."""
+    runner = CliRunner()
+    mock_get_by_identity.return_value = {"test": "data"}
+    
+    # Test with multiple valid traits
+    result = runner.invoke(
+        app,
+        ["get", "test_env", "-i", "test_id", "-t", "key1=value1", "-t", "key2=value2"],
+    )
+    assert result.exit_code == 0
+    mock_get_by_identity.assert_called_once_with(
+        SMITH_API_ENDPOINT,
+        "test_env",
+        "test_id",
+        [{"key1": "value1"}, {"key2": "value2"}],
+    )
+    mock_exit_error.assert_not_called()
+
+@patch("py_flagsmith_cli.clis.get.exit_error")
+@patch("py_flagsmith_cli.clis.get.typer.echo")
+@patch("py_flagsmith_cli.clis.get.get_by_identity")
+def test_invalid_trait_format(mock_get_by_identity, mock_echo, mock_exit_error):
+    """Test that invalid trait format is handled correctly."""
+    runner = CliRunner()
+    
+    # Test with invalid trait format
+    result = runner.invoke(
+        app,
+        ["get", "test_env", "-i", "test_id", "-t", "invalid_trait"],
+    )
+    assert result.exit_code == 1
+    mock_get_by_identity.assert_not_called()
+    mock_exit_error.assert_called_once_with(
+        "Invalid trait format: invalid_trait. Must be in the format key=value"
+    )
+
+@patch("py_flagsmith_cli.clis.get.exit_error")
+@patch("py_flagsmith_cli.clis.get.typer.echo")
+@patch("py_flagsmith_cli.clis.get.get_by_identity")
+def test_traits_with_identity_required(mock_get_by_identity, mock_echo, mock_exit_error):
+    """Test that traits can only be used with identity."""
+    runner = CliRunner()
+    
+    # Test traits without identity
+    result = runner.invoke(
+        app,
+        ["get", "test_env", "-t", "key=value"],
+    )
+    assert result.exit_code == 1
+    mock_get_by_identity.assert_not_called()
+    mock_exit_error.assert_called_once_with(
+        "Traits can only be used when an identity is specified. Use -i/--identity option."
+    )
+
+@patch("py_flagsmith_cli.clis.get.exit_error")
+@patch("py_flagsmith_cli.clis.get.typer.echo")
+@patch("py_flagsmith_cli.clis.get.get_by_identity")
+def test_traits_with_complex_values(mock_get_by_identity, mock_echo, mock_exit_error):
+    """Test that traits with complex values are handled correctly."""
+    runner = CliRunner()
+    mock_get_by_identity.return_value = {"test": "data"}
+    
+    # Test with traits containing special characters
+    result = runner.invoke(
+        app,
+        [
+            "get",
+            "test_env",
+            "-i",
+            "test_id",
+            "-t",
+            "key1=value with spaces",
+            "-t",
+            "key2=value,with,commas",
+            "-t",
+            "key3=value=with=equals",
+        ],
+    )
+    assert result.exit_code == 0
+    mock_get_by_identity.assert_called_once_with(
+        SMITH_API_ENDPOINT,
+        "test_env",
+        "test_id",
+        [
+            {"key1": "value with spaces"},
+            {"key2": "value,with,commas"},
+            {"key3": "value=with=equals"},
+        ],
+    )
+    mock_exit_error.assert_not_called()
