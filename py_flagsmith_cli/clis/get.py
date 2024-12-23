@@ -1,7 +1,7 @@
 import json
 import os
 from enum import Enum
-from typing import Any, Annotated, cast, Optional, List
+from typing import Annotated, Any, List, Optional, cast
 
 import requests
 import typer

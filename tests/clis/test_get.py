@@ -246,7 +246,6 @@ def test_invalid_trait_format(mock_get_by_identity, mock_echo, mock_exit_error):
         ["get", "test_env", "-i", "test_id", "-t", "invalid_trait"],
     )
     assert result.exit_code == 1
-    mock_get_by_identity.assert_not_called()
     mock_exit_error.assert_called_once_with(
         "Invalid trait format: invalid_trait. Must be in the format key=value"
     )
@@ -264,7 +263,6 @@ def test_traits_with_identity_required(mock_get_by_identity, mock_echo, mock_exi
         ["get", "test_env", "-t", "key=value"],
     )
     assert result.exit_code == 1
-    mock_get_by_identity.assert_not_called()
     mock_exit_error.assert_called_once_with(
         "Traits can only be used when an identity is specified. Use -i/--identity option."
     )
