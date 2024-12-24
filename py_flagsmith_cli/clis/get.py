@@ -1,11 +1,12 @@
 import json
 import os
 from enum import Enum
-from typing import Annotated, Any, List, Optional, cast
+from typing import Any, Dict, List, Optional, cast
 
-import requests
 import typer
+import urllib3
 from click import FileError
+from typing_extensions import Annotated
 
 from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT, FLAGSMITH_HOST
 from py_flagsmith_cli.utils import exit_error
@@ -26,8 +27,8 @@ NO_ENVIRONMENT_MSG = (
 
 
 def get_by_identity(
-    api: str, environment: str, identity: str, traits: Optional[List[dict[str, str]]] = None
-) -> dict:
+    api: str, environment: str, identity: str, traits: Optional[List[Dict[str, str]]] = None
+) -> Dict[str, Any]:
     """
     Retrieves the flags and traits associated with a given identity from the Flagsmith API.
 
@@ -35,10 +36,10 @@ def get_by_identity(
         api (str): The API endpoint for the Flagsmith API.
         environment (str): The environment key for authentication.
         identity (str): The identity for which to retrieve flags and traits.
-        traits (Optional[List[dict[str, str]]]): A list of trait key-value pairs.
+        traits (Optional[List[Dict[str, str]]]): A list of trait key-value pairs.
 
     Returns:
-        dict: A dictionary containing the following keys:
+        Dict[str, Any]: A dictionary containing the following keys:
             - "api" (str): The API endpoint used.
             - "environmentID" (str): The environment key used.
             - "flags" (list): A list of dictionaries, each representing a flag.
@@ -53,23 +54,34 @@ def get_by_identity(
     if identity is None:
         identity = ""
     typer.echo(f"Fetching flags and traits for identity: {identity}")
-    params: dict[str, Any] = {"identifier": identity}
-    if traits:
-        params["traits"] = traits
-    identity_response: requests.Response = requests.get(
-        f"{api}identities/",
-        headers={"x-environment-key": environment},
-        params=params,
-    )
-    if identity_response.status_code != 200:
-        exit_error(
-            f"Error initializing flagsmith: {identity_response.status_code} - {identity_response.text}"
-        )
-    data = identity_response.json()
 
-    flags: list[dict[str, Any]] = []
+    http = urllib3.PoolManager()
+    params: Dict[str, Any] = {"identifier": identity}
+    if traits:
+        params["traits"] = json.dumps(traits)
+
+    headers = {
+        "x-environment-key": environment,
+        "Content-Type": "application/json",
+    }
+
+    identity_response = http.request(
+        "GET",
+        f"{api}identities/",
+        fields=params,
+        headers=headers,
+    )
+
+    if identity_response.status != 200:
+        exit_error(
+            f"Error initializing flagsmith: {identity_response.status} - {identity_response.data.decode('utf-8')}"
+        )
+
+    data = json.loads(identity_response.data.decode("utf-8"))
+
+    flags: List[Dict[str, Any]] = []
     for flag in data.get("flags", []):
-        feature: dict[str, Any] = flag.get("feature", {})
+        feature: Dict[str, Any] = flag.get("feature", {})
         flags.append(
             {
                 feature.get("name", "").lower().replace(" ", "_"): {
@@ -79,7 +91,7 @@ def get_by_identity(
                 },
             }
         )
-    response_traits: dict = {
+    response_traits: Dict[str, Any] = {
         trait.get("trait_key", "").lower().replace(" ", ""): trait.get("trait_value")
         for trait in data.get("traits", [])
     }
@@ -95,7 +107,7 @@ def get_by_identity(
     }
 
 
-def get_by_environment(api: str, environment: str) -> dict:
+def get_by_environment(api: str, environment: str) -> Dict[str, Any]:
     """
     Retrieves the environment document from the API using the provided API endpoint and environment key.
 
@@ -104,18 +116,29 @@ def get_by_environment(api: str, environment: str) -> dict:
         environment (str): The environment key to use for authentication.
 
     Returns:
-        dict: The environment document as a dictionary.
+        Dict[str, Any]: The environment document as a dictionary.
 
     Raises:
         typer.Exit: If the API request fails with a non-200 status code.
     """
-    response: requests.Response = requests.get(
+    http = urllib3.PoolManager()
+    headers = {
+        "x-environment-key": environment,
+        "Content-Type": "application/json",
+    }
+
+    response = http.request(
+        "GET",
         f"{api}environment-document/",
-        headers={"x-environment-key": environment},
+        headers=headers,
     )
-    if response.status_code != 200:
-        exit_error(f"Error fetching environment document: {response.status_code} - {response.text}")
-    return response.json()
+
+    if response.status != 200:
+        exit_error(
+            f"Error fetching environment document: {response.status} - {response.data.decode('utf-8')}"
+        )
+
+    return json.loads(response.data.decode("utf-8"))
 
 
 def entry(
@@ -175,7 +198,6 @@ def entry(
             "--trait",
             "-t",
             help="Trait key-value pairs, separated by an equals sign (=). Can be specified multiple times.",
-            # multiple=True,
         ),
     ] = None,
 ):
@@ -203,13 +225,16 @@ def entry(
     traits = []
     if trait:
         if not identity:
-            exit_error("Traits can only be used when an identity is specified. Use -i/--identity option.")
+            exit_error(
+                "Traits can only be used when an identity is specified. Use -i/--identity option."
+            )
         for t in trait:
             try:
                 k, v = t.split("=", 1)
                 traits.append({k: v})
             except ValueError:
                 exit_error(f"Invalid trait format: {t}. Must be in the format key=value")
+
     if not environment:
         exit_error(
             "A flagsmith environment was not specified, run pysmith get --help for more usage."
@@ -218,6 +243,7 @@ def entry(
     is_document = entity == EntityEnum.environment
     if is_document and not environment.startswith("ser."):
         exit_error(NO_ENVIRONMENT_MSG)
+
     output_string = f"PYSmith: Retrieving flags by environment id {typer.style(environment, fg=typer.colors.GREEN)}"
     if identity:
         output_string += f" for identity {identity}"
@@ -226,7 +252,6 @@ def entry(
     typer.echo(output_string + "...")
 
     api_url = api or SMITH_API_ENDPOINT
-
     typer.echo(f"API endpoint: {typer.style(api_url, fg=typer.colors.GREEN)}")
 
     if is_document:
@@ -247,4 +272,4 @@ def entry(
         except Exception:
             raise FileError(output) from None
         typer.echo(f"Output saved to {typer.style(output, fg=typer.colors.GREEN)}")
-        raise typer.Exit()
+        raise typer.Exit(code=0)
