@@ -1,15 +1,16 @@
 import json
 import os
+import urllib.error
+import urllib.parse
+import urllib.request
 from enum import Enum
 from typing import Any, Dict, List, Optional, cast
 
 import typer
-import urllib3
 from click import FileError
 from typing_extensions import Annotated
 
 from py_flagsmith_cli.constant import FLAGSMITH_ENVIRONMENT, FLAGSMITH_HOST
-from py_flagsmith_cli.utils import exit_error
 
 SMITH_HOST = os.getenv(FLAGSMITH_HOST, "https://edge.api.flagsmith.com")
 SMITH_API_ENDPOINT = f"{SMITH_HOST}/api/v1/"
@@ -55,7 +56,6 @@ def get_by_identity(
         identity = ""
     typer.echo(f"Fetching flags and traits for identity: {identity}")
 
-    http = urllib3.PoolManager()
     params: Dict[str, Any] = {"identifier": identity}
     if traits:
         params["traits"] = json.dumps(traits)
@@ -65,19 +65,21 @@ def get_by_identity(
         "Content-Type": "application/json",
     }
 
-    identity_response = http.request(
-        "GET",
-        f"{api}identities/",
-        fields=params,
-        headers=headers,
-    )
+    url = f"{api}identities/?{urllib.parse.urlencode(params)}"
+    request = urllib.request.Request(url, headers=headers)
 
-    if identity_response.status != 200:
-        exit_error(
-            f"Error initializing flagsmith: {identity_response.status} - {identity_response.data.decode('utf-8')}"
-        )
-
-    data = json.loads(identity_response.data.decode("utf-8"))
+    try:
+        with urllib.request.urlopen(request) as response:
+            if response.status != 200:
+                typer.echo(
+                    f"Error initializing flagsmith: {response.status} - {response.read().decode('utf-8')}",
+                    err=True,
+                )
+                raise typer.Exit(code=1)
+            data = json.loads(response.read().decode("utf-8"))
+    except urllib.error.URLError as e:
+        typer.echo(f"Error initializing flagsmith: {str(e)}", err=True)
+        raise typer.Exit(code=1) from None
 
     flags: List[Dict[str, Any]] = []
     for flag in data.get("flags", []):
@@ -121,24 +123,25 @@ def get_by_environment(api: str, environment: str) -> Dict[str, Any]:
     Raises:
         typer.Exit: If the API request fails with a non-200 status code.
     """
-    http = urllib3.PoolManager()
     headers = {
         "x-environment-key": environment,
         "Content-Type": "application/json",
     }
 
-    response = http.request(
-        "GET",
-        f"{api}environment-document/",
-        headers=headers,
-    )
+    request = urllib.request.Request(f"{api}environment-document/", headers=headers)
 
-    if response.status != 200:
-        exit_error(
-            f"Error fetching environment document: {response.status} - {response.data.decode('utf-8')}"
-        )
-
-    return json.loads(response.data.decode("utf-8"))
+    try:
+        with urllib.request.urlopen(request) as response:
+            if response.status != 200:
+                typer.echo(
+                    f"Error fetching environment document: {response.status} - {response.read().decode('utf-8')}",
+                    err=True,
+                )
+                raise typer.Exit(code=1)
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.URLError as e:
+        typer.echo(f"Error fetching environment document: {str(e)}", err=True)
+        raise typer.Exit(code=1) from None
 
 
 def entry(
@@ -225,24 +228,30 @@ def entry(
     traits = []
     if trait:
         if not identity:
-            exit_error(
-                "Traits can only be used when an identity is specified. Use -i/--identity option."
+            typer.echo(
+                "Traits can only be used when an identity is specified. Use -i/--identity option.",
+                err=True,
             )
+            raise typer.Exit(code=1)
         for t in trait:
             try:
                 k, v = t.split("=", 1)
                 traits.append({k: v})
             except ValueError:
-                exit_error(f"Invalid trait format: {t}. Must be in the format key=value")
+                typer.echo(f"Invalid trait format: {t}. Must be in the format key=value", err=True)
+                raise typer.Exit(code=1) from None
 
     if not environment:
-        exit_error(
-            "A flagsmith environment was not specified, run pysmith get --help for more usage."
+        typer.echo(
+            "A flagsmith environment was not specified, run pysmith get --help for more usage.",
+            err=True,
         )
+        raise typer.Exit(code=1)
 
     is_document = entity == EntityEnum.environment
     if is_document and not environment.startswith("ser."):
-        exit_error(NO_ENVIRONMENT_MSG)
+        typer.echo(NO_ENVIRONMENT_MSG, err=True)
+        raise typer.Exit(code=1)
 
     output_string = f"PYSmith: Retrieving flags by environment id {typer.style(environment, fg=typer.colors.GREEN)}"
     if identity:
