@@ -1,4 +1,4 @@
-mock_get_by_identity ={
+mock_get_by_identity = {
     "traits": [
         {"id": 1, "trait_key": "email", "trait_value": "example@example.com"},
         {"id": 2, "trait_key": "organisations", "trait_value": '"1"'},

@@ -14,9 +14,7 @@ app = app
 @patch("os.getenv")
 @patch("typer.echo")
 @patch("typer.Exit")
-def test_no_environment_set(
-    mock_exit: MagicMock, mock_echo: MagicMock, mock_getenv: MagicMock
-):
+def test_no_environment_set(mock_exit: MagicMock, mock_echo: MagicMock, mock_getenv: MagicMock):
     mock_getenv.return_value = None
     result = runner.invoke(app, ["showenv"])
     mock_echo.assert_called_with(
@@ -33,12 +31,8 @@ in {typer.style('.env', fg=typer.colors.GREEN)} current directory."""
 @patch("os.getenv")
 @patch("typer.echo")
 @patch("typer.Exit")
-def test_environment_set(
-    mock_exit: MagicMock, mock_echo: MagicMock, mock_getenv: MagicMock
-):
-    mock_getenv.side_effect = lambda x: (
-        "test-environment" if x == FLAGSMITH_ENVIRONMENT else None
-    )
+def test_environment_set(mock_exit: MagicMock, mock_echo: MagicMock, mock_getenv: MagicMock):
+    mock_getenv.side_effect = lambda x: ("test-environment" if x == FLAGSMITH_ENVIRONMENT else None)
     mock_echo_obj = MagicMock()
     mock_echo.return_value = mock_echo_obj
     result = runner.invoke(app, ["showenv"])
