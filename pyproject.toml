@@ -3,7 +3,7 @@ version = "1.0.2"
 name = "py-flagsmith-cli"
 description = "flagsmith-cli Python Implementation."
 authors = [{ name = "belingud", email = "im.victor@qq.com" }]
-dependencies = ["typer>=0.12.3", "requests>=2.32.3", "python-dotenv>=1.0.1"]
+dependencies = ["typer>=0.12.3", "python-dotenv>=1.0.1", "urllib3>=2.2.3"]
 requires-python = "<4.0,>=3.8"
 readme = "README.md"
 license = { text = "MIT" }
@@ -37,19 +37,14 @@ includes = ["py_flagsmith_cli"]
 source = "file"
 path = "py_flagsmith_cli/__init__.py"
 
-[tool.pdm.scripts]
-format = "black py_flagsmith_cli"
-isort = "isort ."
-cli = "python -m py_flagsmith_cli"
 
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
     "tox-pdm>=0.7.2",
     "pytest>=8.2.1",
     "isort>=5.13.2",
     "mock>=5.1.0",
     "bump2version>=1.0.1",
-    "black>=24.4.2",
-    "flake8>=5.0.4",
     "pytest-cov>=5.0.0",
+    "ruff>=0.8.4",
 ]
