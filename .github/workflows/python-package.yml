@@ -29,7 +29,7 @@ jobs:
                   pdm install
             - name: Lint with ruff
               run: |
-                  pdm run ruff ./py_flagsmith_cli
+                  pdm run ruff check ./py_flagsmith_cli
             - name: Test with pytest
               run: |
                   pdm run pytest
