@@ -34,7 +34,6 @@ include = ["py_flagsmith_cli", "pyproject.toml"]
 
 [dependency-groups]
 dev = [
-    "tox-pdm>=0.7.2",
     "pytest>=8.2.1",
     "isort>=5.13.2",
     "mock>=5.1.0",
