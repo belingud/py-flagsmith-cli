@@ -48,11 +48,12 @@ Include two commands `get` and `showenv`.
 
 
 ```shell
-pysmith get -h
+pysmith get --help
 
- Usage: pysmith get [OPTIONS] [ENVIRONMENT]
+ Usage: pysmith get [OPTIONS] ENVIRONMENT
 
  Retrieve flagsmith features from the Flagsmith API and output them to file.
+
 
  EXAMPLES
  $ pysmith get <ENVIRONMENT_API_KEY>
@@ -67,26 +68,31 @@ pysmith get -h
 
  $ pysmith get -i flagsmith_identity
 
+ $ pysmith get -t key1=value1 -t key2=value2
+
  $ pysmith get -np
 
-╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────╮
-│   environment      [ENVIRONMENT]  The flagsmith environment key to use, defaults to the environment variable │
-│                                   FLAGSMITH_ENVIRONMENT                                                      │
-│                                   [env var: FLAGSMITH_ENVIRONMENT]                                           │
-│                                   [default: None]                                                            │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --output     -o       <text>  The file path output [default: None]                                           │
-│ --api        -a       <text>  The API URL to fetch the feature flags from                                    │
-│                               [default: https://edge.api.flagsmith.com/api/v1/]                              │
-│ --identity   -i       <text>  The identity for which to fetch feature flags [default: None]                  │
-│ --no-pretty  -np      <flag>  Do not prettify the output JSON                                                │
-│ --entity     -e       <text>  The entity to fetch, this will either be the flags or an environment document  │
-│                               used for Local Evaluation Mode. Refer to                                       │
-│                               https://docs.flagsmith.com/clients/server-side.                                │
-│                               [default: flags]                                                               │
-│ --help       -h               Show this message and exit.                                                    │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Arguments ───────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ *    environment      TEXT  The flagsmith environment key to use, defaults to the environment variable            │
+│                             FLAGSMITH_ENVIRONMENT                                                                 │
+│                             [env var: FLAGSMITH_ENVIRONMENT]                                                      │
+│                             [default: None]                                                                       │
+│                             [required]                                                                            │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ─────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --output     -o       TEXT  The file path output [default: None]                                                  │
+│ --api        -a       TEXT  The API URL to fetch the feature flags from                                           │
+│                             [default: https://edge.api.flagsmith.com/api/v1/]                                     │
+│ --identity   -i       TEXT  The identity for which to fetch feature flags [default: None]                         │
+│ --no-pretty  -np            Do not prettify the output JSON                                                       │
+│ --entity     -e       TEXT  The entity to fetch, this will either be the flags or an environment document used    │
+│                             for Local Evaluation Mode. Refer to https://docs.flagsmith.com/clients/server-side.   │
+│                             [default: flags]                                                                      │
+│ --trait      -t       TEXT  Trait key-value pairs, separated by an equals sign (=). Can be specified multiple     │
+│                             times.                                                                                │
+│                             [default: None]                                                                       │
+│ --help       -h             Show this message and exit.                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 `pysmith showenv`
