@@ -3,7 +3,7 @@ version = "1.0.2"
 name = "py-flagsmith-cli"
 description = "flagsmith-cli Python Implementation."
 authors = [{ name = "belingud", email = "im.victor@qq.com" }]
-dependencies = ["typer>=0.12.3", "python-dotenv>=1.0.1"]
+dependencies = ["typer>=0.16.0", "python-dotenv>=1.0.1"]
 requires-python = "<4.0,>=3.8"
 readme = "README.md"
 license = { text = "MIT" }
@@ -19,24 +19,18 @@ classifiers = [
 [project.scripts]
 pysmith = "py_flagsmith_cli.cli:app"
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
 [tool.pytest.ini_options]
 addopts = "-rsxX -l --tb=short --strict"
 testpaths = ["tests/"]
 python_files = ["tests/*/test*.py"]
-[tool.pdm]
-distribution = true
 
-[tool.pdm.build]
-includes = ["py_flagsmith_cli"]
+[build-system]
+requires = ["hatchling>=1.18.0"]
+build-backend = "hatchling.build"
 
-[tool.pdm.version]
-source = "file"
-path = "py_flagsmith_cli/__init__.py"
-
+[tool.hatch.build]
+exclude = ["test_*.py", "tests/*", ".gitignore"]
+include = ["py_flagsmith_cli", "pyproject.toml"]
 
 [dependency-groups]
 dev = [

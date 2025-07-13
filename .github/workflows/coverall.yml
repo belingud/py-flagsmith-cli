@@ -25,13 +25,13 @@ jobs:
                   python-version: ${{ matrix.python-version }}
             - name: Install dependencies
               run: |
-                  python -m pip install --upgrade pip pdm
-                  pdm install
+                  python -m pip install --upgrade pip uv
+                  uv sync --all-groups --all-extras
             - name: Test with pytest
               run: |
-                  pdm run pytest --cov=./py_flagsmith_cli
+                  uv run pytest --cov=./py_flagsmith_cli
             - name: Convert To lcov
               run: |
-                  pdm run coverage lcov -o coverage/lcov.info
+                  uv run coverage lcov -o coverage/lcov.info
             - name: Coveralls GitHub Action
               uses: coverallsapp/github-action@v2.3.0

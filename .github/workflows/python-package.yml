@@ -25,11 +25,11 @@ jobs:
                   python-version: ${{ matrix.python-version }}
             - name: Install dependencies
               run: |
-                  python -m pip install --upgrade pip pdm
-                  pdm install
+                  python -m pip install --upgrade pip uv
+                  uv sync --all-groups --all-extras
             - name: Lint with ruff
               run: |
-                  pdm run ruff check ./py_flagsmith_cli
+                  uv run ruff check ./py_flagsmith_cli
             - name: Test with pytest
               run: |
-                  pdm run pytest
+                  uv run pytest
