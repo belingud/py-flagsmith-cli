@@ -1,3 +1,3 @@
 from .cli import app  # NOQA
 
-__version__ = "1.0.2"
+__version__ = "1.1.0"
